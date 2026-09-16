@@ -30,6 +30,11 @@ document.querySelector('[data-open-payment]')?.addEventListener('click', () => m
 document.querySelector('[data-close-payment]')?.addEventListener('click', () => modal?.classList.remove('open'));
 modal?.addEventListener('click', (event) => { if (event.target === modal) modal.classList.remove('open'); });
 
+const importModal = document.querySelector('[data-import-modal]');
+document.querySelector('[data-open-import]')?.addEventListener('click', () => importModal?.classList.add('open'));
+document.querySelector('[data-close-import]')?.addEventListener('click', () => importModal?.classList.remove('open'));
+importModal?.addEventListener('click', (event) => { if (event.target === importModal) importModal.classList.remove('open'); });
+
 const settlementEditor = document.querySelector('[data-settlement-editor]');
 const editorRows = settlementEditor?.querySelector('[data-editor-rows]');
 const participantOptions = settlementEditor?.querySelector('[data-participant-options]')?.innerHTML || '';

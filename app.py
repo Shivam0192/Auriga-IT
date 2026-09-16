@@ -5,6 +5,7 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 from werkzeug.security import check_password_hash
 
 from models import Contribution, Participant, Pool, PoolRefund, SettlementPlan, User, db
+from import_data import import_contributions
 from settlement import calculate_balances, calculate_collection_status, calculate_fair_share, calculate_refunds, generate_settlement
 
 
@@ -216,7 +217,8 @@ def pool_dashboard(pool_id):
     settlement_transfers, refunds, settlement_is_custom = settlement_view_data(pool, records)
     settlement_remaining = sum(item["amount"] for item in settlement_transfers if not item.get("settled"))
     settlement_settled = sum(bool(item.get("settled")) for item in settlement_transfers)
-    return render_template("pool.html", pool=pool, records=records, collection=collection, refunds=refunds, settlement_transfers=settlement_transfers, settlement_is_custom=settlement_is_custom, settlement_remaining=settlement_remaining, settlement_settled=settlement_settled)
+    import_report = session.pop(f"import_report_{pool.id}", None)
+    return render_template("pool.html", pool=pool, records=records, collection=collection, refunds=refunds, settlement_transfers=settlement_transfers, settlement_is_custom=settlement_is_custom, settlement_remaining=settlement_remaining, settlement_settled=settlement_settled, import_report=import_report)
 
 
 @app.post("/pools/<int:pool_id>/payments")
@@ -233,6 +235,32 @@ def add_payment(pool_id):
     db.session.add(Contribution(participant_id=participant.id, amount=amount))
     db.session.commit()
     flash(f"Payment recorded for {participant.name}", "success")
+    return redirect(url_for("pool_dashboard", pool_id=pool.id))
+
+
+@app.post("/pools/<int:pool_id>/import")
+def import_pool_contributions(pool_id):
+    pool = Pool.query.get_or_404(pool_id)
+    upload = request.files.get("contributions_file")
+    if not upload or not upload.filename:
+        flash("Choose a CSV file to import", "error")
+        return redirect(url_for("pool_dashboard", pool_id=pool.id))
+    try:
+        text = upload.read().decode("utf-8-sig")
+        known_names = [participant.name for participant in pool.participants]
+        rows, report = import_contributions(text, known_names)
+        for row in rows:
+            participant = next((item for item in pool.participants if item.name == row["name"]), None)
+            if not participant:
+                participant = Participant(pool_id=pool.id, name=row["name"])
+                db.session.add(participant)
+                db.session.flush()
+            db.session.add(Contribution(participant_id=participant.id, amount=row["amount"]))
+        db.session.commit()
+        session[f"import_report_{pool.id}"] = report
+        flash(f"Imported {report['imported']} contribution rows", "success")
+    except (UnicodeDecodeError, ValueError) as error:
+        flash(f"Import failed: {error}", "error")
     return redirect(url_for("pool_dashboard", pool_id=pool.id))
 
 

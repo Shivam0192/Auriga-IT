@@ -30,6 +30,12 @@ New users can select **Create account** on the sign-in page. Passwords are store
 
 Use **Load demo** to create a sample pool with paid, partially paid, unpaid, and overpaid participants.
 
+## Import past contributions
+
+From a pool dashboard, choose **Import CSV**. The file must have a header containing a name column (`name`, `person`, or `participant`) and an amount column (`amount`, `paid`, or `contribution`). Amounts such as `1200`, `1,200`, `₹1,200.00`, and `1200.5` are accepted.
+
+The importer normalizes case and spacing, conservatively merges close spelling variants, skips duplicate normalized name/amount rows, creates valid new participants, and rejects missing names, invalid amounts, and non-positive amounts. The dashboard displays the counts and expandable details for imported, duplicate, merged, and rejected rows.
+
 ## Test
 
 ```bash

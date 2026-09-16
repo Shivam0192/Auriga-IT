@@ -20,6 +20,10 @@ SQLite keeps the MVP self-contained and reliable for a demonstration. Pools, par
 
 The interface uses a responsive server-rendered layout with a focused login screen, dashboard summary cards, mobile-friendly participant rows, and clear settlement/refund callouts. Authentication remains intentionally small: users are stored with password hashes, signup validates uniqueness, and the local reset flow supports the demo without introducing email infrastructure.
 
+## Messy historical imports
+
+Historical contribution data is cleaned in `import_data.py`, separate from the route and database layer. CSV headers are matched flexibly, amounts are converted to paise, names are normalized for case and spacing, and a conservative similarity threshold catches common spelling variants. Duplicate detection happens after normalization, so the report can distinguish accepted rows, duplicate rows skipped, variants merged, and invalid rows rejected. Valid names not already in the pool become participants, after which normal balance calculation automatically includes the imported contributions.
+
 ## Validation
 
 The financial module is isolated from Flask and database concerns, allowing focused tests for fair shares, balances, collection totals, settlement matching, and refunds. Flask test-client smoke checks cover login, pool creation, history, settlement editing, settled transfers, and over-collection display.
