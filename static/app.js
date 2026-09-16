@@ -89,3 +89,19 @@ themeToggle?.addEventListener('click', () => {
   updateThemeToggle();
 });
 updateThemeToggle();
+
+const languageSelect = document.querySelector('[data-language-select]');
+const translations = {
+  en: { 'New pool': 'New pool', 'Settle up': 'Settle up', 'Sign out': 'Sign out', 'Dark mode': 'Dark mode', 'Light mode': 'Light mode', 'Target': 'Target', 'Collected': 'Collected', 'Left to collect': 'Left to collect', 'Fair share': 'Fair share', 'Participant balances': 'Participant balances', 'Add payment': 'Add payment', 'Import CSV': 'Import CSV', 'Pool history': 'Pool history', 'Create pool': 'Create pool', 'Load demo': 'Load demo', 'Edit plan': 'Edit plan', 'Save plan': 'Save plan', 'Add transfer': 'Add transfer' },
+  hi: { 'New pool': 'नया पूल', 'Settle up': 'हिसाब करें', 'Sign out': 'साइन आउट', 'Dark mode': 'डार्क मोड', 'Light mode': 'लाइट मोड', 'Target': 'लक्ष्य', 'Collected': 'जमा राशि', 'Left to collect': 'बाकी राशि', 'Fair share': 'उचित हिस्सा', 'Participant balances': 'प्रतिभागी शेष', 'Add payment': 'भुगतान जोड़ें', 'Import CSV': 'CSV आयात करें', 'Pool history': 'पूल इतिहास', 'Create pool': 'पूल बनाएं', 'Load demo': 'डेमो लोड करें', 'Edit plan': 'योजना संपादित करें', 'Save plan': 'योजना सहेजें', 'Add transfer': 'हस्तांतरण जोड़ें' },
+  es: { 'New pool': 'Nuevo fondo', 'Settle up': 'Liquidar', 'Sign out': 'Cerrar sesión', 'Dark mode': 'Modo oscuro', 'Light mode': 'Modo claro', 'Target': 'Objetivo', 'Collected': 'Recaudado', 'Left to collect': 'Falta recaudar', 'Fair share': 'Parte justa', 'Participant balances': 'Saldos de participantes', 'Add payment': 'Añadir pago', 'Import CSV': 'Importar CSV', 'Pool history': 'Historial de fondos', 'Create pool': 'Crear fondo', 'Load demo': 'Cargar demo', 'Edit plan': 'Editar plan', 'Save plan': 'Guardar plan', 'Add transfer': 'Añadir transferencia' }
+};
+const translatable = [...document.querySelectorAll('[data-i18n]')];
+function applyLanguage(language) {
+  const dictionary = translations[language] || translations.en;
+  translatable.forEach((element) => { const key = element.dataset.i18n; if (dictionary[key]) element.textContent = dictionary[key]; });
+  if (languageSelect) languageSelect.value = language;
+  localStorage.setItem('fairpool-language', language);
+}
+languageSelect?.addEventListener('change', (event) => applyLanguage(event.target.value));
+applyLanguage(localStorage.getItem('fairpool-language') || 'en');

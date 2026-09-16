@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ pool.name }} · FairPool{% endblock %}
-{% block nav_actions %}<div class="nav-actions"><a class="text-link" href="{{ url_for('new_pool') }}">New pool</a><a class="button button-dark button-small" href="{{ url_for('settlement', pool_id=pool.id) }}">Settle up <span>→</span></a></div>{% endblock %}
+{% block nav_actions %}<div class="nav-actions"><a class="text-link" data-i18n="New pool" href="{{ url_for('new_pool') }}">New pool</a><a class="button button-dark button-small" href="{{ url_for('settlement', pool_id=pool.id) }}"><span data-i18n="Settle up">Settle up</span> <span>→</span></a></div>{% endblock %}
 {% block content %}
 <section class="dashboard shell">
   <div class="dashboard-heading"><div><div class="eyebrow"><span class="eyebrow-dot"></span> Active pool</div><h1>{{ pool.name }}</h1><p>{{ pool.participants|length }} people are splitting this pool</p></div><div class="dashboard-actions"><button class="button button-secondary button-small" data-open-import>Import CSV</button><button class="button button-primary" data-open-payment>+ Add payment</button></div></div>
