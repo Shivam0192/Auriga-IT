@@ -40,13 +40,15 @@ settlementEditor?.addEventListener('click', (event) => {
   if (!event.target.matches('[data-add-transfer]')) return;
   const row = document.createElement('div');
   row.className = 'editor-row';
-  row.innerHTML = `<select name="transfer_from" required>${participantOptions}</select><span>pays</span><select name="transfer_to" required>${participantOptions}</select><input name="transfer_amount" inputmode="decimal" placeholder="0.00" required><input type="hidden" name="transfer_original_amount" value=""><label class="settled-toggle"><input type="checkbox" name="transfer_settled" value="${editorRows.children.length}"> Settled</label><button class="icon-button remove-transfer" type="button" aria-label="Remove transfer">×</button>`;
+  row.innerHTML = `<select name="transfer_from" required>${participantOptions}</select><span>pays</span><select name="transfer_to" required>${participantOptions}</select><input name="transfer_amount" inputmode="decimal" placeholder="0.00" required><input type="hidden" name="transfer_original_amount" value=""><label class="settled-toggle"><input type="checkbox" name="transfer_settled" value="${editorRows.children.length}"><span>Settled</span></label><button class="icon-button remove-transfer" type="button" aria-label="Remove transfer">×</button>`;
   editorRows.appendChild(row);
 });
 
 settlementEditor?.addEventListener('change', (event) => {
   if (!event.target.matches('input[name="transfer_settled"]')) return;
-  const amount = event.target.closest('.editor-row').querySelector('input[name="transfer_amount"]');
+  const row = event.target.closest('.editor-row');
+  const amount = row.querySelector('input[name="transfer_amount"]');
+  event.target.closest('.settled-toggle').classList.toggle('is-settled', event.target.checked);
   amount.readOnly = event.target.checked;
   if (event.target.checked) amount.value = '0.00';
 });
