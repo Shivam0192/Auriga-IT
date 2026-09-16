@@ -3,7 +3,7 @@ import os
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 
-from models import Contribution, Participant, Pool, SettlementPlan, db
+from models import Contribution, Participant, Pool, PoolRefund, SettlementPlan, db
 from settlement import calculate_balances, calculate_collection_status, calculate_fair_share, calculate_refunds, generate_settlement
 
 
@@ -77,6 +77,12 @@ def settlement_view_data(pool, records):
     saved_plan = SettlementPlan.query.filter_by(pool_id=pool.id).first()
     transfers = json.loads(saved_plan.transfers) if saved_plan else generated
     refunds = calculate_refunds([{"name": item["participant"].name, "balance": item["balance"]} for item in records], transfers)
+    participant_by_name = {participant.name: participant for participant in pool.participants}
+    for refund in refunds:
+        participant = participant_by_name[refund["name"]]
+        saved_refund = PoolRefund.query.filter_by(pool_id=pool.id, participant_id=participant.id, amount=refund["amount"]).order_by(PoolRefund.id.desc()).first()
+        refund["participant_id"] = participant.id
+        refund["completed"] = bool(saved_refund and saved_refund.completed)
     return transfers, refunds, bool(saved_plan)
 
 
@@ -229,6 +235,24 @@ def reset_settlement(pool_id):
         db.session.delete(saved_plan)
         db.session.commit()
     flash("Generated settlement plan restored", "success")
+    return redirect(url_for("settlement", pool_id=pool.id))
+
+
+@app.post("/pools/<int:pool_id>/refunds/<int:participant_id>/complete")
+def complete_refund(pool_id, participant_id):
+    pool = Pool.query.get_or_404(pool_id)
+    participant = Participant.query.filter_by(id=participant_id, pool_id=pool.id).first_or_404()
+    records, _, _ = pool_view_data(pool)
+    transfers, _, _ = settlement_view_data(pool, records)
+    refund = next((item for item in calculate_refunds([{"name": item["participant"].name, "balance": item["balance"]} for item in records], transfers) if item["name"] == participant.name), None)
+    if refund:
+        saved_refund = PoolRefund.query.filter_by(pool_id=pool.id, participant_id=participant.id, amount=refund["amount"]).first()
+        if not saved_refund:
+            saved_refund = PoolRefund(pool_id=pool.id, participant_id=participant.id, amount=refund["amount"])
+            db.session.add(saved_refund)
+        saved_refund.completed = True
+        db.session.commit()
+        flash(f"Refund marked completed for {participant.name}", "success")
     return redirect(url_for("settlement", pool_id=pool.id))
 
 

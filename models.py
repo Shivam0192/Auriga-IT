@@ -38,3 +38,12 @@ class SettlementPlan(db.Model):
     pool_id = db.Column(db.Integer, db.ForeignKey("pool.id"), nullable=False, unique=True)
     transfers = db.Column(db.Text, nullable=False, default="[]")
     updated_at = db.Column(db.DateTime(timezone=True), default=utc_now, onupdate=utc_now, nullable=False)
+
+
+class PoolRefund(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    pool_id = db.Column(db.Integer, db.ForeignKey("pool.id"), nullable=False)
+    participant_id = db.Column(db.Integer, db.ForeignKey("participant.id"), nullable=False)
+    amount = db.Column(db.Integer, nullable=False)
+    completed = db.Column(db.Boolean, nullable=False, default=False)
+    created_at = db.Column(db.DateTime(timezone=True), default=utc_now, nullable=False)

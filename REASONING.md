@@ -16,7 +16,7 @@ Pool collection is deliberately separate from participant fairness. Collection a
 
 ## Persistence and UX
 
-SQLite keeps the MVP self-contained and reliable for a demonstration. Pools, participants, contributions, and custom settlement plans persist across refreshes. The home page provides a history of created pools so the organiser can return to any dashboard instead of being forced into only the newest pool.
+SQLite keeps the MVP self-contained and reliable for a demonstration. Pools, participants, contributions, custom settlement plans, and completed refund records persist across refreshes. The home page provides a history of created pools so the organiser can return to any dashboard instead of being forced into only the newest pool.
 
 The interface uses a responsive server-rendered layout with a focused login screen, dashboard summary cards, mobile-friendly participant rows, and clear settlement/refund callouts. Authentication is intentionally a simple demo gate because the requested MVP excludes a full identity system.
 

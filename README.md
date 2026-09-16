@@ -45,7 +45,7 @@ The default database is SQLite at `instance/fairpool.db`. SQLAlchemy creates the
 DATABASE_URL=sqlite:////tmp/fairpool.db python3 app.py
 ```
 
-Core tables are `Pool`, `Participant`, `Contribution`, and the persisted custom `SettlementPlan`.
+Core tables are `Pool`, `Participant`, `Contribution`, the persisted custom `SettlementPlan`, and `PoolRefund` records for completed refunds.
 
 ## Debugging
 
