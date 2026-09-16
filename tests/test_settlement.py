@@ -48,6 +48,7 @@ def test_messy_import_merges_duplicates_and_rejects_invalid_rows():
     accepted, report = import_contributions(text, ["Aman", "Riya"])
     assert len(accepted) == 2
     assert report["imported"] == 2
+    assert report["imported_amount"] == 170000
     assert len(report["duplicates"]) == 2
     assert len(report["merged"]) == 2
     assert len(report["rejected"]) == 2

@@ -71,4 +71,4 @@ def import_contributions(text, known_names):
             names.append(resolved_name)
         accepted.append({"name": resolved_name, "amount": amount})
 
-    return accepted, {"imported": len(accepted), "duplicates": duplicates, "merged": merged, "rejected": rejected, "new_names": [name for name in names if name not in known_names]}
+    return accepted, {"imported": len(accepted), "imported_amount": sum(item["amount"] for item in accepted), "duplicates": duplicates, "merged": merged, "rejected": rejected, "new_names": [name for name in names if name not in known_names]}
