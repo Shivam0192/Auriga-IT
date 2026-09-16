@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash
 
 
 db = SQLAlchemy()
@@ -8,6 +9,16 @@ db = SQLAlchemy()
 
 def utc_now():
     return datetime.now(timezone.utc)
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(80), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    created_at = db.Column(db.DateTime(timezone=True), default=utc_now, nullable=False)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
 
 
 class Pool(db.Model):

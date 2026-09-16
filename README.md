@@ -26,6 +26,8 @@ The demo login is:
 - Username: `admin`
 - Password: `12345`
 
+New users can select **Create account** on the sign-in page. Passwords are stored as Werkzeug hashes in SQLite. **Forgot password?** provides the local MVP reset flow using the account username and a new password; a production deployment should replace this with verified email or another identity provider.
+
 Use **Load demo** to create a sample pool with paid, partially paid, unpaid, and overpaid participants.
 
 ## Test

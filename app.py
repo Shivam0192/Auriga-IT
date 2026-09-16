@@ -2,8 +2,9 @@ import json
 import os
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
+from werkzeug.security import check_password_hash
 
-from models import Contribution, Participant, Pool, PoolRefund, SettlementPlan, db
+from models import Contribution, Participant, Pool, PoolRefund, SettlementPlan, User, db
 from settlement import calculate_balances, calculate_collection_status, calculate_fair_share, calculate_refunds, generate_settlement
 
 
@@ -19,7 +20,7 @@ DEMO_PASSWORD = "12345"
 
 @app.before_request
 def require_login():
-    if request.endpoint in {"login", "static"}:
+    if request.endpoint in {"login", "signup", "forgot_password", "static"}:
         return None
     if not session.get("authenticated"):
         return redirect(url_for("login", next=request.path))
@@ -98,13 +99,64 @@ def login():
     if request.method == "POST":
         username = request.form.get("username", "").strip()
         password = request.form.get("password", "")
-        if username == DEMO_USERNAME and password == DEMO_PASSWORD:
+        user = User.query.filter_by(username=username).first()
+        if user and check_password_hash(user.password_hash, password):
             session["authenticated"] = True
+            session["user_id"] = user.id
             next_url = request.args.get("next") or url_for("index")
             safe_next_url = next_url if next_url.startswith("/") and not next_url.startswith("//") else url_for("index")
             return redirect(safe_next_url)
         flash("Incorrect username or password", "error")
     return render_template("login.html")
+
+
+@app.route("/signup", methods=["GET", "POST"])
+def signup():
+    if session.get("authenticated"):
+        return redirect(url_for("index"))
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+        confirmation = request.form.get("confirmation", "")
+        if len(username) < 3:
+            flash("Username must be at least 3 characters", "error")
+        elif len(password) < 5:
+            flash("Password must be at least 5 characters", "error")
+        elif password != confirmation:
+            flash("Passwords do not match", "error")
+        elif User.query.filter_by(username=username).first():
+            flash("That username is already in use", "error")
+        else:
+            user = User(username=username)
+            user.set_password(password)
+            db.session.add(user)
+            db.session.commit()
+            flash("Account created. You can now sign in.", "success")
+            return redirect(url_for("login"))
+    return render_template("signup.html")
+
+
+@app.route("/forgot-password", methods=["GET", "POST"])
+def forgot_password():
+    if session.get("authenticated"):
+        return redirect(url_for("index"))
+    if request.method == "POST":
+        username = request.form.get("username", "").strip()
+        password = request.form.get("password", "")
+        confirmation = request.form.get("confirmation", "")
+        user = User.query.filter_by(username=username).first()
+        if not user:
+            flash("No account was found with that username", "error")
+        elif len(password) < 5:
+            flash("Password must be at least 5 characters", "error")
+        elif password != confirmation:
+            flash("Passwords do not match", "error")
+        else:
+            user.set_password(password)
+            db.session.commit()
+            flash("Password updated. You can now sign in.", "success")
+            return redirect(url_for("login"))
+    return render_template("forgot_password.html")
 
 
 @app.post("/logout")
@@ -258,6 +310,11 @@ def complete_refund(pool_id, participant_id):
 
 with app.app_context():
     db.create_all()
+    if not User.query.filter_by(username=DEMO_USERNAME).first():
+        demo_user = User(username=DEMO_USERNAME)
+        demo_user.set_password(DEMO_PASSWORD)
+        db.session.add(demo_user)
+        db.session.commit()
 
 
 if __name__ == "__main__":

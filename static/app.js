@@ -56,3 +56,13 @@ settlementEditor?.querySelector('form')?.addEventListener('submit', () => {
     row.querySelector('input[name="transfer_settled"]').value = String(index);
   });
 });
+
+document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
+  toggle.addEventListener('click', () => {
+    const input = toggle.closest('.password-field').querySelector('input');
+    const visible = input.type === 'text';
+    input.type = visible ? 'password' : 'text';
+    toggle.setAttribute('aria-label', visible ? 'Show password' : 'Hide password');
+    toggle.classList.toggle('is-visible', !visible);
+  });
+});

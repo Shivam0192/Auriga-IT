@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Create account · FairPool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-page login-reference signup-reference">
+  <main class="login-frame">
+    <section class="login-visual"><a class="brand login-brand" href="{{ url_for('login') }}"><span class="brand-mark">F</span> FairPool</a><div class="login-message"><span>Bring everyone onto</span><strong>the same page.</strong><p>Create a workspace for clear contributions and calm settlements.</p></div><div class="visual-photo"></div><div class="visual-glow"></div></section>
+    <section class="login-panel"><div class="login-card"><div class="eyebrow"><span class="eyebrow-dot"></span> New workspace</div><h1>Create your account.</h1><p>Start organizing shared costs without the spreadsheet chase.</p>{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="login-error {% if category == 'success' %}login-success{% endif %}">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}<form method="post" action="{{ url_for('signup') }}"><label>Username<input name="username" autocomplete="username" required autofocus placeholder="Choose a username"></label><label>Password<div class="password-field"><input name="password" type="password" autocomplete="new-password" required placeholder="At least 5 characters"><button type="button" class="password-toggle" data-password-toggle aria-label="Show password">&#128065;</button></div></label><label>Confirm password<div class="password-field"><input name="confirmation" type="password" autocomplete="new-password" required placeholder="Repeat your password"><button type="button" class="password-toggle" data-password-toggle aria-label="Show password">&#128065;</button></div></label><button class="button button-primary full-width" type="submit">Create account <span>→</span></button></form><div class="auth-links"><a href="{{ url_for('login') }}">Already have an account? Sign in</a></div></div><small class="panel-footer">Simple money coordination for real groups.</small></section>
+  </main>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
