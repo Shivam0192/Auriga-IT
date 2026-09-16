@@ -7,12 +7,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <script>document.documentElement.dataset.theme = localStorage.getItem('fairpool-theme') || 'light';</script>
   <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
   <nav class="nav shell">
     <a class="brand" href="{{ url_for('index') }}"><span class="brand-mark">F</span> FairPool</a>
     {% block nav_actions %}{% endblock %}
+    <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch to dark mode"><span class="theme-icon">☾</span><span class="theme-label">Dark mode</span></button>
     {% if session.get('authenticated') %}<form action="{{ url_for('logout') }}" method="post"><button class="text-link logout-button" type="submit">Sign out</button></form>{% endif %}
   </nav>
   {% with messages = get_flashed_messages(with_categories=true) %}

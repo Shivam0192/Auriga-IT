@@ -73,3 +73,19 @@ document.querySelectorAll('[data-password-toggle]').forEach((toggle) => {
     toggle.classList.toggle('is-visible', !visible);
   });
 });
+
+const themeToggle = document.querySelector('[data-theme-toggle]');
+function updateThemeToggle() {
+  const dark = document.documentElement.dataset.theme === 'dark';
+  if (!themeToggle) return;
+  themeToggle.setAttribute('aria-label', dark ? 'Switch to light mode' : 'Switch to dark mode');
+  themeToggle.querySelector('.theme-icon').textContent = dark ? '☀' : '☾';
+  themeToggle.querySelector('.theme-label').textContent = dark ? 'Light mode' : 'Dark mode';
+}
+themeToggle?.addEventListener('click', () => {
+  const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+  document.documentElement.dataset.theme = nextTheme;
+  localStorage.setItem('fairpool-theme', nextTheme);
+  updateThemeToggle();
+});
+updateThemeToggle();
