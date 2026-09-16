@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sign in · FairPool</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="login-page login-reference">
+  <main class="login-frame">
+    <section class="login-visual">
+      <a class="brand login-brand" href="{{ url_for('login') }}"><span class="brand-mark">F</span> FairPool</a>
+      <div class="login-message"><span>Make group money feel</span><strong>simple again.</strong><p>Everyone sees what they owe, what they paid, and exactly how to settle.</p></div>
+      <div class="visual-photo"></div><div class="visual-glow"></div>
+    </section>
+    <section class="login-panel"><div class="login-card"><div class="eyebrow"><span class="eyebrow-dot"></span> Private workspace</div><h1>Welcome back.</h1><p>Sign in to keep your group contributions moving fairly.</p>{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}{% for category, message in messages %}<div class="login-error">{{ message }}</div>{% endfor %}{% endif %}{% endwith %}<form method="post" action="{{ url_for('login', next=request.args.get('next', '')) }}"><label>Username<input name="username" autocomplete="username" required autofocus placeholder="Enter username"></label><label>Password<input name="password" type="password" autocomplete="current-password" required placeholder="Enter password"></label><button class="button button-primary full-width" type="submit">Sign in <span>→</span></button></form><small class="login-note">FairPool workspace access</small></div><small class="panel-footer">A clearer way to settle together.</small></section>
+  </main>
+</body>
+</html>

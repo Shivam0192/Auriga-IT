@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Create a pool · FairPool{% endblock %}
+{% block content %}
+<section class="welcome home-welcome shell" id="create-pool">
+  <div class="welcome-copy">
+    <div class="eyebrow"><span class="eyebrow-dot"></span> Group money, made clear</div>
+    <h1>Keep the group<br><em>fairly funded.</em></h1>
+    <p>Track contributions, see who owes what, and settle up without the spreadsheet gymnastics.</p>
+    <form class="demo-form" action="{{ url_for('load_demo') }}" method="post"><button class="button button-secondary" type="submit">Load demo <span>↗</span></button></form>
+  </div>
+  <div class="create-card">
+    <div class="card-kicker">Start a new pool</div>
+    <h2>What are you collecting for?</h2>
+    <form action="{{ url_for('create_pool') }}" method="post" id="create-form">
+      <label>Pool name<input name="name" required placeholder="e.g. Manager farewell gift"></label>
+      <div class="input-row">
+        <label class="currency-label">Currency<select name="currency"><option value="INR">₹ INR</option><option value="USD">$ USD</option><option value="EUR">€ EUR</option></select></label>
+        <label>Target amount<input name="target_amount" required inputmode="decimal" placeholder="6,000"></label>
+      </div>
+      <div class="participant-heading"><label>Participants</label><span id="participant-count">0 added</span></div>
+      <div id="participant-list" class="participant-list">
+        <div class="participant-input"><span class="person-index">01</span><input name="participants" required placeholder="Enter a name"><button type="button" class="icon-button remove-person" aria-label="Remove participant">×</button></div>
+        <div class="participant-input"><span class="person-index">02</span><input name="participants" placeholder="Enter a name"><button type="button" class="icon-button remove-person" aria-label="Remove participant">×</button></div>
+      </div>
+      <button type="button" id="add-participant" class="add-person">+ Add another person</button>
+      <button class="button button-primary full-width" type="submit">Create pool <span>→</span></button>
+    </form>
+  </div>
+</section>
+<section class="history-section shell">
+  <div class="section-heading history-heading"><div><div class="eyebrow"><span class="eyebrow-dot"></span> Your workspace</div><h2>Pool history</h2><p>Every pool you create stays here for a quick return.</p></div><span class="history-count">{{ pools|length }} pool{% if pools|length != 1 %}s{% endif %}</span></div>
+  {% if pools %}<div class="history-list">{% for pool in pools %}<a class="history-row" href="{{ url_for('pool_dashboard', pool_id=pool.id) }}"><span class="history-icon">{{ pool.name[0]|upper }}</span><span class="history-name"><strong>{{ pool.name }}</strong><small>{{ pool.participants|length }} participant{% if pool.participants|length != 1 %}s{% endif %} · Created {{ pool.created_at.strftime('%d %b %Y') }}</small></span><span class="history-target">{{ pool.target_amount|money(pool.currency) }}<small>target</small></span><span class="history-open">Open <b>→</b></span></a>{% endfor %}</div>{% else %}<div class="history-empty"><span class="history-icon">+</span><p>Your created pools will appear here.</p></div>{% endif %}
+</section>
+{% endblock %}
